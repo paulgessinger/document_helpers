@@ -41,12 +41,17 @@ def sync(file, dr):
 
         set_tags(dest, total_tags)
 
+
 @click.command("sync_tags")
-@click.argument("files", nargs=-1)
+@click.argument(
+    "files",
+    nargs=-1,
+    type=click.Path(exists=True, readable=True, file_okay=True, dir_okay=False),
+)
 @click.option("--dry-run", "-s", is_flag=True)
 def main(files, dry_run):
     if len(files) == 0:
-      print("No files given, do nothing.")
+        print("No files given, do nothing.")
 
     if len(files) == 1 and files[0] == "-":
         # read from stdin

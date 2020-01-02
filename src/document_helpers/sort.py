@@ -73,8 +73,17 @@ def move(f, basedir, dr=False):
 
 
 @click.command("sort_docs")
-@click.argument("files", nargs=-1, type=click.Path(exists=True, readable=True))
-@click.option("--outputdir", envvar="DOCUMENT_HELPERS_SORT_OUTPUT_DIR", required=True, type=click.Path(exists=True, writable=True))
+@click.argument(
+    "files",
+    nargs=-1,
+    type=click.Path(exists=True, readable=True, file_okay=True, dir_okay=False),
+)
+@click.option(
+    "--outputdir",
+    envvar="DOCUMENT_HELPERS_SORT_OUTPUT_DIR",
+    required=True,
+    type=click.Path(exists=True, writable=True, file_okay=False, dir_okay=True),
+)
 @click.option("--dry-run", "-s", is_flag=True)
 def main(files, outputdir, dry_run):
     try:
