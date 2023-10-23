@@ -27,7 +27,8 @@ def parse_filename(file):
         file,
     )
 
-    assert m is not None, "Regex did not match"
+    if m is None:
+        raise RuntimeError("Regex did not match")
 
     if m.group("date") is not None:
         dt = datetime.strptime(m.group("date"), "%Y-%m-%d")

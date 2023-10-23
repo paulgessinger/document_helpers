@@ -17,6 +17,7 @@ from .log import get_logger
 from .filename import parse_filename, format_filename
 from .tags import get_tags, set_tags
 
+print("SCRIPT")
 
 def quote(s):
     if sys.version_info < (3, 3):
@@ -33,7 +34,7 @@ level = logging.DEBUG
 logger = get_logger("sort", level)
 
 
-def move(f, basedir, dr=False):
+def move(f, basedir, dr, tags_exe):
     if not os.path.exists(f):
         logger.error("%s not found", f)
         return
@@ -59,7 +60,7 @@ def move(f, basedir, dr=False):
 
     # fname = "{}-{}".format(mtime.strftime("%Y-%m-%d"), root)
     # dest = os.path.join(destdir, fname + ext)
-    tags = get_tags(f) | name_info.tags
+    tags = get_tags(f, tags_exe=tags_exe) | name_info.tags
     dest = os.path.join(
         destdir, format_filename(name_info.name, name_info.dt, tags=tags)
     )
@@ -69,7 +70,7 @@ def move(f, basedir, dr=False):
     if not dr:
         cmd = "mv {} {}".format(quote(f), quote(dest))
         os.system(cmd)
-        set_tags(dest, tags)
+        set_tags(dest, tags, tags_exe=tags_exe)
 
 
 @click.command("sort_docs")
@@ -84,8 +85,10 @@ def move(f, basedir, dr=False):
     required=True,
     type=click.Path(exists=True, writable=True, file_okay=False, dir_okay=True),
 )
+@click.option("--tags", type=click.Path(exists=True, dir_okay=False, executable=True))
 @click.option("--dry-run", "-s", is_flag=True)
-def main(files, outputdir, dry_run):
+def main(files, outputdir, dry_run, tags):
+    print("BEGIN")
     try:
         if len(files) == 0:
             print("No files given, do nothing")
@@ -95,10 +98,9 @@ def main(files, outputdir, dry_run):
 
         logger.debug("Destination: %s", outputdir)
         for f in files:
-            move(f, outputdir, dr=dry_run)
+            move(f, outputdir, dr=dry_run, tags_exe=tags)
 
     except Exception as e:
-        print("blub")
         logger.error("Caught exception: %s" % str(e), exc_info=True)
 
 

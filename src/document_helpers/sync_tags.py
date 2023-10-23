@@ -16,9 +16,9 @@ from .filename import parse_filename, format_filename
 logger = get_logger("sync_tags", level=logging.DEBUG)
 
 
-def sync(file, dr):
+def sync(file, dr, tags_exe):
     logger.info(file)
-    finder_tags = get_tags(file)
+    finder_tags = get_tags(file, tags_exe=tags_exe)
     logger.debug("Finder tags: %s", ", ".join(finder_tags))
     name_info = parse_filename(os.path.basename(file))
     logger.debug(name_info)
@@ -39,7 +39,7 @@ def sync(file, dr):
         logger.info("%s => %s", file, dest)
         os.rename(file, dest)
 
-        set_tags(dest, total_tags)
+        set_tags(dest, total_tags, tags_exe=tags_exe)
 
 
 @click.command("sync_tags")
@@ -48,19 +48,25 @@ def sync(file, dr):
     nargs=-1,
     type=click.Path(exists=True, readable=True, file_okay=True, dir_okay=False),
 )
+@click.option("--tags", type=click.Path(exists=True, dir_okay=False, executable=True))
 @click.option("--dry-run", "-s", is_flag=True)
-def main(files, dry_run):
-    if len(files) == 0:
-        print("No files given, do nothing.")
-
-    if len(files) == 1 and files[0] == "-":
-        # read from stdin
-        files = sys.stdin.read().strip().split("\n")
-
+def main(files, dry_run, tags):
     logger.debug(files)
-    for file in files:
-        assert os.path.exists(file), "File %s does not exist" % file
-        sync(file, dry_run)
+    try:
+        if len(files) == 0:
+            print("No files given, do nothing.")
+
+        if len(files) == 1 and files[0] == "-":
+            # read from stdin
+            files = sys.stdin.read().strip().split("\n")
+
+
+        logger.debug(files)
+        for file in files:
+            assert os.path.exists(file), "File %s does not exist" % file
+            sync(file, dry_run, tags)
+    except:
+        logger.error("Exception occurred", exc_info=True)
 
 
 if "__main__" == __name__:
