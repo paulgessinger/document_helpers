@@ -1,5 +1,6 @@
 import subprocess
 
+
 def get_tags(f, tags_exe=None):
     #  print(tags_exe)
     tags_exe = tags_exe or subprocess.check_output(["which", "tag"]).decode().strip()

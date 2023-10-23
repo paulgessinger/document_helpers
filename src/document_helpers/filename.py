@@ -21,7 +21,6 @@ def dataclass(**kwargs):
 
 
 def parse_filename(file):
-
     m = re.match(
         r"(?:^(?P<date>\d{4}-\d{2}-\d{2})--)?(?:--)?(?P<name>.*?)(?:__)?(?:(?<=__)(?P<tags>[\wÄÖÜäöü\- ]+?))?(?P<ext>\.\w+)$",
         file,

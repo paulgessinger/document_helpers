@@ -19,6 +19,7 @@ from .tags import get_tags, set_tags
 
 print("SCRIPT")
 
+
 def quote(s):
     if sys.version_info < (3, 3):
         import pipes

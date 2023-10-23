@@ -60,7 +60,6 @@ def main(files, dry_run, tags):
             # read from stdin
             files = sys.stdin.read().strip().split("\n")
 
-
         logger.debug(files)
         for file in files:
             assert os.path.exists(file), "File %s does not exist" % file
